@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  sellit_postgres_docker:
+    image: postgres:17
+    container_name: sellit_postgres_docker
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data_docker:/var/lib/postgresql/data
+    env_file:
+      - ../../env/docker.env
+    networks:
+      - sellit_network
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  sellit_app_docker:
+    build:
+      context: ../../
+      dockerfile: infra/docker/Dockerfile
+    container_name: sellit_app_docker
+    depends_on:
+      - sellit_postgres_docker
+    env_file:
+      - ../../env/docker.env
+    environment:
+      - DB_HOST=sellit_postgres_docker
+    volumes:
+      - ../../:/app
+      - /app/.venv
+    networks:
+      - sellit_network
+    # Keep container running for development/executing scripts
+    command: tail -f /dev/null
+
+volumes:
+  postgres_data_docker:
+
+
+networks:
+  sellit_network:
+    driver: bridge

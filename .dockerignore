@@ -1,0 +1,27 @@
+
+# Version Control
+.git/
+.gitignore
+
+# Python Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE configurations
+.vscode/
+.idea/
+
+# Local configuration
+*.env
+!env/docker.env
+!env/common.env
+
+# Docker artifacts
+
